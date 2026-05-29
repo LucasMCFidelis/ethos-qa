@@ -10,13 +10,14 @@
     "format:check": "prettier . --check",
     "cy:e2e": "cypress run --config-file cypress.config.ts",
     "cy:api": "cypress run --config-file cypress.config.api.ts",
-    "cy:all": "cypress run"
+    "cy:all": "run-s cy:e2e cy:api"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "@cypress/grep": "^6.0.0",
     "@eslint/js": "^9.39.2",
     "@types/node": "^25.9.1",
     "cypress": "^15.8.1",
@@ -26,6 +27,7 @@
     "eslint-plugin-cypress": "^5.2.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1"
