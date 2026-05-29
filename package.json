@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts,.js",
     "lint:cypress": "eslint cypress --ext .ts",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "cy:e2e": "cypress run --config-file cypress.config.ts",
+    "cy:api": "cypress run --config-file cypress.config.api.ts",
+    "cy:all": "cypress run"
   },
   "keywords": [],
   "author": "",
