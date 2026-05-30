@@ -17,6 +17,32 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
   );
 
   it(
+    "ETHOS-8 Busca pergunta existente na trilha",
+    { tags: [TAGS.SMOKE] },
+    () => {
+      const apiUrl = getApiUrl();
+
+      let trackId: string;
+      const questionId: string = "q1";
+      cy.request(`${apiUrl}/simulation/tracks`).then((response) => {
+        trackId = response.body.data.tracks[0].id;
+
+        expect(trackId).to.not.equal(null);
+
+        cy.request(
+          `${apiUrl}/simulation/tracks/${trackId}/questions/${questionId}`,
+        ).then((response) => {
+          const responseData = response.body.data;
+          expect(response.status).to.eq(200);
+          expect(responseData.id).to.eq(questionId);
+          expect(responseData.text).to.be.a("string");
+          expect(responseData.options).to.be.a("object");
+        });
+      });
+    },
+  );
+
+  it(
     "ETHOS-32 Valida schema do response da listagem de trilhas",
     { tags: [TAGS.SCHEMA] },
     () => {
