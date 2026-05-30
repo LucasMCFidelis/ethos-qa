@@ -1,32 +1,18 @@
 import { TAGS } from "../../support/constants/tags";
-import { getApiUrl } from "../../support/utils/get-api-url";
 import { validateSchema } from "../../support/utils/validate-schema";
+import type {
+  SessionStartResponse,
+  AnswerNextQuestionResponse,
+  AnswerFinishResponse,
+  SavedAnswerResponse,
+} from "../../support/types/api";
+import { TracksClient } from "../../support/api-clients/TracksClient";
+import { SessionsClient } from "../../support/api-clients/SessionsClient";
 
 const TRACK_ID = "confidencialidade";
 const FIRST_QUESTION_ID = "q1";
 const VALID_ANSWER_SIM = "sim";
 const VALID_ANSWER_NAO = "nao";
-
-type ApiResponse = Cypress.Response<Record<string, unknown>>;
-
-interface SessionStartData {
-  sessionId: string;
-  finished: boolean;
-  maxQuestions: number;
-  question: { id: string; text: string; options: string[] };
-}
-
-interface AnswerData {
-  finished: boolean;
-  question?: { id: string; text: string; options: string[] };
-  result?: { key: string; label: string; description: string; actions: unknown[] };
-}
-
-interface SavedAnswerData {
-  finished: boolean;
-  question: { id: string; text: string; options: string[] };
-  savedResponse: string;
-}
 
 const sessionStartSchema = {
   type: "object",
@@ -129,17 +115,16 @@ const savedAnswerSchema = {
 };
 
 describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
-  const apiUrl = getApiUrl();
+  const tracksClient = new TracksClient();
+  const sessionsClient = new SessionsClient();
 
   describe("ETHOS-13", () => {
-    let responseObject: ApiResponse;
+    let responseObject: Cypress.Response<SessionStartResponse>;
 
     before(() => {
-      cy.request(`${apiUrl}/simulation/tracks/${TRACK_ID}/start`).then(
-        (response) => {
-          responseObject = response;
-        },
-      );
+      tracksClient.startSession(TRACK_ID).then((response) => {
+        responseObject = response;
+      });
     });
 
     it(
@@ -148,7 +133,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
       () => {
         expect(responseObject.status).to.eq(201);
 
-        const data = responseObject.body.data as SessionStartData;
+        const data = responseObject.body.data;
 
         expect(data.sessionId).to.match(
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
@@ -173,24 +158,19 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   });
 
   describe("ETHOS-15", () => {
-    let responseObject: ApiResponse;
+    let responseObject: Cypress.Response<AnswerNextQuestionResponse>;
 
     before(() => {
-      cy.request(`${apiUrl}/simulation/tracks/${TRACK_ID}/start`).then(
-        (startResponse) => {
-          const sessionId = (startResponse.body.data as SessionStartData).sessionId;
+      tracksClient.startSession(TRACK_ID).then((startResponse) => {
+        const sessionId = startResponse.body.data.sessionId;
 
-          return cy
-            .request({
-              method: "POST",
-              url: `${apiUrl}/simulation/sessions/${sessionId}/answer`,
-              body: { questionId: FIRST_QUESTION_ID, answer: VALID_ANSWER_SIM },
-            })
-            .then((response) => {
-              responseObject = response;
-            });
-        },
-      );
+        return sessionsClient
+          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_SIM)
+          .then((response) => {
+            responseObject =
+              response as Cypress.Response<AnswerNextQuestionResponse>;
+          });
+      });
     });
 
     it(
@@ -199,7 +179,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
       () => {
         expect(responseObject.status).to.eq(200);
 
-        const data = responseObject.body.data as AnswerData;
+        const data = responseObject.body.data;
 
         expect(data.finished).to.eq(false);
         expect(data.question?.id).to.not.equal(FIRST_QUESTION_ID);
@@ -221,24 +201,18 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   });
 
   describe("ETHOS-16", () => {
-    let responseObject: ApiResponse;
+    let responseObject: Cypress.Response<AnswerFinishResponse>;
 
     before(() => {
-      cy.request(`${apiUrl}/simulation/tracks/${TRACK_ID}/start`).then(
-        (startResponse) => {
-          const sessionId = (startResponse.body.data as SessionStartData).sessionId;
+      tracksClient.startSession(TRACK_ID).then((startResponse) => {
+        const sessionId = startResponse.body.data.sessionId;
 
-          return cy
-            .request({
-              method: "POST",
-              url: `${apiUrl}/simulation/sessions/${sessionId}/answer`,
-              body: { questionId: FIRST_QUESTION_ID, answer: VALID_ANSWER_NAO },
-            })
-            .then((response) => {
-              responseObject = response;
-            });
-        },
-      );
+        return sessionsClient
+          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_NAO)
+          .then((response) => {
+            responseObject = response as Cypress.Response<AnswerFinishResponse>;
+          });
+      });
     });
 
     it(
@@ -247,7 +221,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
       () => {
         expect(responseObject.status).to.eq(200);
 
-        const data = responseObject.body.data as AnswerData;
+        const data = responseObject.body.data;
 
         expect(data.finished).to.eq(true);
         expect(responseObject.body).to.not.have.property("question");
@@ -268,30 +242,22 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   });
 
   describe("ETHOS-20", () => {
-    let responseObject: ApiResponse;
+    let responseObject: Cypress.Response<SavedAnswerResponse>;
 
     before(() => {
-      cy.request(`${apiUrl}/simulation/tracks/${TRACK_ID}/start`).then(
-        (startResponse) => {
-          const sessionId = (startResponse.body.data as SessionStartData).sessionId;
+      tracksClient.startSession(TRACK_ID).then((startResponse) => {
+        const sessionId = startResponse.body.data.sessionId;
 
-          return cy
-            .request({
-              method: "POST",
-              url: `${apiUrl}/simulation/sessions/${sessionId}/answer`,
-              body: { questionId: FIRST_QUESTION_ID, answer: VALID_ANSWER_SIM },
-            })
-            .then(() =>
-              cy
-                .request(
-                  `${apiUrl}/simulation/sessions/${sessionId}/answer/${FIRST_QUESTION_ID}`,
-                )
-                .then((response) => {
-                  responseObject = response;
-                }),
-            );
-        },
-      );
+        return sessionsClient
+          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_SIM)
+          .then(() =>
+            sessionsClient
+              .getSavedAnswer(sessionId, FIRST_QUESTION_ID)
+              .then((response) => {
+                responseObject = response;
+              }),
+          );
+      });
     });
 
     it(
@@ -300,7 +266,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
       () => {
         expect(responseObject.status).to.eq(200);
 
-        const data = responseObject.body.data as SavedAnswerData;
+        const data = responseObject.body.data;
 
         expect(data.finished).to.eq(false);
         expect(data.question.id).to.equal(FIRST_QUESTION_ID);

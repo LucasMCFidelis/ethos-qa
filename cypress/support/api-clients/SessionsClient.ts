@@ -17,14 +17,21 @@ export class SessionsClient extends BaseClient {
   ): Cypress.Chainable<
     Cypress.Response<AnswerNextQuestionResponse | AnswerFinishResponse>
   > {
-    throw new Error("Not implemented");
+    return cy.request({
+      method: "POST",
+      url: `${this.baseUrl}/simulation/sessions/${sessionId}/answer`,
+      body: { questionId, answer },
+    });
   }
 
   getSavedAnswer(
     sessionId: string,
     questionId: string,
   ): Cypress.Chainable<Cypress.Response<SavedAnswerResponse>> {
-    throw new Error("Not implemented");
+    return cy.request({
+      method: "GET",
+      url: `${this.baseUrl}/simulation/sessions/${sessionId}/answer/${questionId}`,
+    });
   }
 
   getResult(sessionId: string): Cypress.Chainable<

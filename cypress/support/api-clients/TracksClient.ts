@@ -21,6 +21,6 @@ export class TracksClient extends BaseClient {
   startSession(
     trackId: string,
   ): Cypress.Chainable<Cypress.Response<SessionStartResponse>> {
-    throw new Error("Not implemented");
+    return cy.request(`${this.baseUrl}/simulation/tracks/${trackId}/start`);
   }
 }
