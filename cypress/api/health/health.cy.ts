@@ -1,12 +1,12 @@
+import { HealthClient } from "../../support/api-clients/HealthClient";
 import { TAGS } from "../../support/constants/tags";
-import { getApiUrl } from "../../support/utils/get-api-url";
 import { validateSchema } from "../../support/utils/validate-schema";
 
 describe("Health API", { tags: [TAGS.HEALTH] }, () => {
-  it("ETHOS-5 monitoramento API funcionando", { tags: [TAGS.SMOKE] }, () => {
-    const apiUrl = getApiUrl();
+  const healthClient = new HealthClient();
 
-    cy.request(`${apiUrl}/health`).then((response) => {
+  it("ETHOS-5 monitoramento API funcionando", { tags: [TAGS.SMOKE] }, () => {
+    healthClient.getHealth().then((response) => {
       const responseBody = response.body;
       expect(response.status).to.eq(200);
       expect(responseBody.status).to.eql("ok");
@@ -33,9 +33,7 @@ describe("Health API", { tags: [TAGS.HEALTH] }, () => {
         },
       };
 
-      const apiUrl = getApiUrl();
-
-      cy.request(`${apiUrl}/health`).then((response) => {
+      healthClient.getHealth().then((response) => {
         const responseBody = response.body;
         validateSchema({ data: responseBody, schema, schemaName: "Health" });
       });
