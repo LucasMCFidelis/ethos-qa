@@ -1,15 +1,15 @@
+import { TracksClient } from "../../support/api-clients/TracksClient";
 import { TAGS } from "../../support/constants/tags";
-import { getApiUrl } from "../../support/utils/get-api-url";
 import { validateSchema } from "../../support/utils/validate-schema";
 
 describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
+  const tracksClient = new TracksClient();
+  
   it(
     "ETHOS-7 Valida listagem das trilhas disponíveis",
     { tags: [TAGS.SMOKE] },
     () => {
-      const apiUrl = getApiUrl();
-
-      cy.request(`${apiUrl}/simulation/tracks`).then((response) => {
+      tracksClient.getTracks().then((response) => {
         expect(response.status).to.eq(200);
         expect(response.body.data.tracks.length).to.be.greaterThan(0);
       });
@@ -20,18 +20,14 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
     "ETHOS-8 Busca pergunta existente na trilha",
     { tags: [TAGS.SMOKE] },
     () => {
-      const apiUrl = getApiUrl();
-
       let trackId: string;
       const questionId: string = "q1";
-      cy.request(`${apiUrl}/simulation/tracks`).then((response) => {
+      tracksClient.getTracks().then((response) => {
         trackId = response.body.data.tracks[0].id;
 
         expect(trackId).to.not.equal(null);
 
-        cy.request(
-          `${apiUrl}/simulation/tracks/${trackId}/questions/${questionId}`,
-        ).then((response) => {
+        tracksClient.getQuestion(trackId, questionId).then((response) => {
           const responseData = response.body.data;
           expect(response.status).to.eq(200);
           expect(responseData.id).to.eq(questionId);
@@ -73,9 +69,7 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
         required: ["ok", "data"],
       };
 
-      const apiUrl = getApiUrl();
-
-      cy.request(`${apiUrl}/simulation/tracks`).then((response) => {
+      tracksClient.getTracks().then((response) => {
         const responseBody = response.body;
         validateSchema({ data: responseBody, schema, schemaName: "Tracks" });
       });
