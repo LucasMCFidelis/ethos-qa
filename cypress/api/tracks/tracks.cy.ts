@@ -1,6 +1,7 @@
 import { TracksClient } from "../../support/api-clients/TracksClient";
 import { TAGS } from "../../support/constants/tags";
 import { tracksSchema } from "../../support/schemas/tracks/tracks.schema";
+import { TRACKS_TEST_DATA } from "../../support/test-data/tracks";
 import { validateSchema } from "../../support/utils/validate-schema";
 
 describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
@@ -22,7 +23,7 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
     { tags: [TAGS.SMOKE] },
     () => {
       let trackId: string;
-      const questionId: string = "q1";
+      const questionId = TRACKS_TEST_DATA.FIRST_QUESTION_ID;
       tracksClient.getTracks().then((response) => {
         trackId = response.body.data.tracks[0].id;
 

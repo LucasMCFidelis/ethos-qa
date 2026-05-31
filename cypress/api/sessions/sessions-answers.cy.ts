@@ -12,11 +12,8 @@ import { answerFinishSchema } from "../../support/schemas/sessions/answer-finish
 import { answerNextQuestionSchema } from "../../support/schemas/sessions/answer-next-question.schema";
 import { savedAnswerSchema } from "../../support/schemas/sessions/saved-answer.schema";
 import { sessionStartSchema } from "../../support/schemas/sessions/session-start.schema";
-
-const TRACK_ID = "confidencialidade";
-const FIRST_QUESTION_ID = "q1";
-const VALID_ANSWER_SIM = "sim";
-const VALID_ANSWER_NAO = "nao";
+import { TRACKS_TEST_DATA } from "../../support/test-data/tracks";
+import { SESSION_ANSWERS } from "../../support/test-data/sessions";
 
 describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   const tracksClient = new TracksClient();
@@ -26,9 +23,11 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
     let responseObject: Cypress.Response<SessionStartResponse>;
 
     before(() => {
-      tracksClient.startSession(TRACK_ID).then((response) => {
-        responseObject = response;
-      });
+      tracksClient
+        .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
+        .then((response) => {
+          responseObject = response;
+        });
     });
 
     it(
@@ -44,7 +43,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         );
         expect(data.finished).to.eq(false);
         expect(data.maxQuestions).to.be.above(0);
-        expect(data.question.id).to.equal(FIRST_QUESTION_ID);
+        expect(data.question.id).to.equal(TRACKS_TEST_DATA.FIRST_QUESTION_ID);
       },
     );
 
@@ -65,16 +64,22 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
     let responseObject: Cypress.Response<AnswerNextQuestionResponse>;
 
     before(() => {
-      tracksClient.startSession(TRACK_ID).then((startResponse) => {
-        const sessionId = startResponse.body.data.sessionId;
+      tracksClient
+        .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
+        .then((startResponse) => {
+          const sessionId = startResponse.body.data.sessionId;
 
-        return sessionsClient
-          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_SIM)
-          .then((response) => {
-            responseObject =
-              response as Cypress.Response<AnswerNextQuestionResponse>;
-          });
-      });
+          return sessionsClient
+            .answerQuestion(
+              sessionId,
+              TRACKS_TEST_DATA.FIRST_QUESTION_ID,
+              SESSION_ANSWERS.YES,
+            )
+            .then((response) => {
+              responseObject =
+                response as Cypress.Response<AnswerNextQuestionResponse>;
+            });
+        });
     });
 
     it(
@@ -86,7 +91,9 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         const data = responseObject.body.data;
 
         expect(data.finished).to.eq(false);
-        expect(data.question?.id).to.not.equal(FIRST_QUESTION_ID);
+        expect(data.question?.id).to.not.equal(
+          TRACKS_TEST_DATA.FIRST_QUESTION_ID,
+        );
         expect(responseObject.body).to.not.have.property("result");
       },
     );
@@ -108,15 +115,22 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
     let responseObject: Cypress.Response<AnswerFinishResponse>;
 
     before(() => {
-      tracksClient.startSession(TRACK_ID).then((startResponse) => {
-        const sessionId = startResponse.body.data.sessionId;
+      tracksClient
+        .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
+        .then((startResponse) => {
+          const sessionId = startResponse.body.data.sessionId;
 
-        return sessionsClient
-          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_NAO)
-          .then((response) => {
-            responseObject = response as Cypress.Response<AnswerFinishResponse>;
-          });
-      });
+          return sessionsClient
+            .answerQuestion(
+              sessionId,
+              TRACKS_TEST_DATA.FIRST_QUESTION_ID,
+              SESSION_ANSWERS.NO,
+            )
+            .then((response) => {
+              responseObject =
+                response as Cypress.Response<AnswerFinishResponse>;
+            });
+        });
     });
 
     it(
@@ -149,19 +163,25 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
     let responseObject: Cypress.Response<SavedAnswerResponse>;
 
     before(() => {
-      tracksClient.startSession(TRACK_ID).then((startResponse) => {
-        const sessionId = startResponse.body.data.sessionId;
+      tracksClient
+        .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
+        .then((startResponse) => {
+          const sessionId = startResponse.body.data.sessionId;
 
-        return sessionsClient
-          .answerQuestion(sessionId, FIRST_QUESTION_ID, VALID_ANSWER_SIM)
-          .then(() =>
-            sessionsClient
-              .getSavedAnswer(sessionId, FIRST_QUESTION_ID)
-              .then((response) => {
-                responseObject = response;
-              }),
-          );
-      });
+          return sessionsClient
+            .answerQuestion(
+              sessionId,
+              TRACKS_TEST_DATA.FIRST_QUESTION_ID,
+              SESSION_ANSWERS.YES,
+            )
+            .then(() =>
+              sessionsClient
+                .getSavedAnswer(sessionId, TRACKS_TEST_DATA.FIRST_QUESTION_ID)
+                .then((response) => {
+                  responseObject = response;
+                }),
+            );
+        });
     });
 
     it(
@@ -173,7 +193,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         const data = responseObject.body.data;
 
         expect(data.finished).to.eq(false);
-        expect(data.question.id).to.equal(FIRST_QUESTION_ID);
+        expect(data.question.id).to.equal(TRACKS_TEST_DATA.FIRST_QUESTION_ID);
         expect(data.question.options).to.include(data.savedResponse);
       },
     );
