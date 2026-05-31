@@ -1,5 +1,6 @@
 import { HealthClient } from "../../support/api-clients/HealthClient";
 import { TAGS } from "../../support/constants/tags";
+import { healthSchema } from "../../support/schemas/health/health.schema";
 import { validateSchema } from "../../support/utils/validate-schema";
 
 describe("Health API", { tags: [TAGS.HEALTH] }, () => {
@@ -18,24 +19,13 @@ describe("Health API", { tags: [TAGS.HEALTH] }, () => {
     "ETHOS-31 Valida schema do response do endpoint",
     { tags: [TAGS.SCHEMA] },
     () => {
-      const schema = {
-        description: "string",
-        type: "object",
-        properties: {
-          status: { type: "string", enum: ["ok", "degraded"] },
-          timestamp: { type: "string", format: "date-time" },
-          services: {
-            type: "object",
-            properties: {
-              database: { type: "string", enum: ["ok", "unreachable"] },
-            },
-          },
-        },
-      };
-
       healthClient.getHealth().then((response) => {
         const responseBody = response.body;
-        validateSchema({ data: responseBody, schema, schemaName: "Health" });
+        validateSchema({
+          data: responseBody,
+          schema: healthSchema,
+          schemaName: "Health",
+        });
       });
     },
   );

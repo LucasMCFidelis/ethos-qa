@@ -1,10 +1,11 @@
 import { TracksClient } from "../../support/api-clients/TracksClient";
 import { TAGS } from "../../support/constants/tags";
+import { tracksSchema } from "../../support/schemas/tracks/tracks.schema";
 import { validateSchema } from "../../support/utils/validate-schema";
 
 describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
   const tracksClient = new TracksClient();
-  
+
   it(
     "ETHOS-7 Valida listagem das trilhas disponíveis",
     { tags: [TAGS.SMOKE] },
@@ -42,36 +43,13 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
     "ETHOS-32 Valida schema do response da listagem de trilhas",
     { tags: [TAGS.SCHEMA] },
     () => {
-      const schema = {
-        type: "object",
-        description: "string",
-        properties: {
-          ok: { type: "boolean" },
-          data: {
-            type: "object",
-            properties: {
-              tracks: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "string" },
-                    title: { type: "string" },
-                    description: { type: "string" },
-                  },
-                  required: ["id", "title", "description"],
-                },
-              },
-            },
-            required: ["tracks"],
-          },
-        },
-        required: ["ok", "data"],
-      };
-
       tracksClient.getTracks().then((response) => {
         const responseBody = response.body;
-        validateSchema({ data: responseBody, schema, schemaName: "Tracks" });
+        validateSchema({
+          data: responseBody,
+          schema: tracksSchema,
+          schemaName: "Tracks",
+        });
       });
     },
   );

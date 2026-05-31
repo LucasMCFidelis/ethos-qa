@@ -8,111 +8,15 @@ import type {
 } from "../../support/types/api";
 import { TracksClient } from "../../support/api-clients/TracksClient";
 import { SessionsClient } from "../../support/api-clients/SessionsClient";
+import { answerFinishSchema } from "../../support/schemas/sessions/answer-finish.schema";
+import { answerNextQuestionSchema } from "../../support/schemas/sessions/answer-next-question.schema";
+import { savedAnswerSchema } from "../../support/schemas/sessions/saved-answer.schema";
+import { sessionStartSchema } from "../../support/schemas/sessions/session-start.schema";
 
 const TRACK_ID = "confidencialidade";
 const FIRST_QUESTION_ID = "q1";
 const VALID_ANSWER_SIM = "sim";
 const VALID_ANSWER_NAO = "nao";
-
-const sessionStartSchema = {
-  type: "object",
-  properties: {
-    ok: { type: "boolean" },
-    data: {
-      type: "object",
-      properties: {
-        sessionId: { type: "string", format: "uuid" },
-        finished: { type: "boolean" },
-        maxQuestions: { type: "number" },
-        question: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            text: { type: "string" },
-            options: { type: "array", items: { type: "string" } },
-          },
-          required: ["id", "text", "options"],
-        },
-      },
-      required: ["sessionId", "finished", "maxQuestions", "question"],
-    },
-  },
-  required: ["ok", "data"],
-};
-
-const answerNextQuestionSchema = {
-  type: "object",
-  properties: {
-    ok: { type: "boolean" },
-    data: {
-      type: "object",
-      properties: {
-        finished: { type: "boolean" },
-        question: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            text: { type: "string" },
-            options: { type: "array", items: { type: "string" } },
-          },
-          required: ["id", "text", "options"],
-        },
-      },
-      required: ["finished", "question"],
-    },
-  },
-  required: ["ok", "data"],
-};
-
-const answerFinishSchema = {
-  type: "object",
-  properties: {
-    ok: { type: "boolean" },
-    data: {
-      type: "object",
-      properties: {
-        finished: { type: "boolean" },
-        result: {
-          type: "object",
-          properties: {
-            key: { type: "string" },
-            label: { type: "string" },
-            description: { type: "string" },
-            actions: { type: "array" },
-          },
-          required: ["key", "label", "description", "actions"],
-        },
-      },
-      required: ["finished", "result"],
-    },
-  },
-  required: ["ok", "data"],
-};
-
-const savedAnswerSchema = {
-  type: "object",
-  properties: {
-    ok: { type: "boolean" },
-    data: {
-      type: "object",
-      properties: {
-        finished: { type: "boolean" },
-        question: {
-          type: "object",
-          properties: {
-            id: { type: "string" },
-            text: { type: "string" },
-            options: { type: "array", items: { type: "string" } },
-          },
-          required: ["id", "text", "options"],
-        },
-        savedResponse: { type: "string" },
-      },
-      required: ["finished", "question", "savedResponse"],
-    },
-  },
-  required: ["ok", "data"],
-};
 
 describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   const tracksClient = new TracksClient();
