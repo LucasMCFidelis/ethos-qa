@@ -61,6 +61,8 @@ export interface SessionResult {
   key: string;
   label: string;
   description: string;
+  action_type: string;
+  level: string;
   actions: unknown[];
 }
 
@@ -81,8 +83,29 @@ export interface SavedAnswerResponse {
   };
 }
 
+export interface SessionResultResponse {
+  ok: boolean;
+  data: {
+    finished: boolean;
+    result: SessionResult;
+  };
+}
+
+export interface FeedbackPayload {
+  rate: number;
+  useObjective: string;
+  suggestion?: string;
+}
+
 export interface FeedbackResponse {
   ok: boolean;
+  data: {
+    sessionId: string;
+    rate: number;
+    useObjective: string;
+    suggestion?: string | null;
+    createdAt: string;
+  };
 }
 
 export interface DeleteSessionResponse {

@@ -2,9 +2,10 @@ import {
   AnswerFinishResponse,
   AnswerNextQuestionResponse,
   DeleteSessionResponse,
+  FeedbackPayload,
   FeedbackResponse,
   SavedAnswerResponse,
-  SessionResult,
+  SessionResultResponse,
 } from "../types/api";
 
 import { BaseClient } from "./BaseClient";
@@ -34,25 +35,32 @@ export class SessionsClient extends BaseClient {
     });
   }
 
-  getResult(sessionId: string): Cypress.Chainable<
-    Cypress.Response<{
-      ok: boolean;
-      data: SessionResult;
-    }>
-  > {
-    throw new Error("Not implemented");
+  getResult(
+    sessionId: string,
+  ): Cypress.Chainable<Cypress.Response<SessionResultResponse>> {
+    return cy.request({
+      method: "GET",
+      url: `${this.baseUrl}/simulation/sessions/${sessionId}/result`,
+    });
   }
 
   submitFeedback(
     sessionId: string,
-    payload: object,
+    payload: FeedbackPayload,
   ): Cypress.Chainable<Cypress.Response<FeedbackResponse>> {
-    throw new Error("Not implemented");
+    return cy.request({
+      method: "POST",
+      url: `${this.baseUrl}/simulation/sessions/${sessionId}/feedback`,
+      body: payload,
+    });
   }
 
   deleteSession(
     sessionId: string,
   ): Cypress.Chainable<Cypress.Response<DeleteSessionResponse>> {
-    throw new Error("Not implemented");
+    return cy.request({
+      method: "DELETE",
+      url: `${this.baseUrl}/simulation/sessions/${sessionId}`,
+    });
   }
 }
