@@ -1,0 +1,34 @@
+name: Wait for API
+description: "Aguarda a API responder no health-check"
+
+inputs:
+  url:
+    description: "URL do health-check"
+    required: false
+    default: "http://localhost:3000/api/v1/health"
+  retries:
+    description: "Número de tentativas"
+    required: false
+    default: "30"
+  interval:
+    description: "Intervalo em segundos entre tentativas"
+    required: false
+    default: "3"
+
+runs:
+  using: composite
+  steps:
+    - name: Wait for API to be ready
+      shell: bash
+      run: |
+        echo "Aguardando API em ${{ inputs.url }}..."
+        for i in $(seq 1 ${{ inputs.retries }}); do
+          if curl -sf ${{ inputs.url }} > /dev/null; then
+            echo "API pronta na tentativa $i!"
+            exit 0
+          fi
+          echo "Tentativa $i/${{ inputs.retries }} — aguardando ${{ inputs.interval }}s..."
+          sleep ${{ inputs.interval }}
+        done
+        echo "ERRO: API não respondeu após $((${{ inputs.retries }} * ${{ inputs.interval }}))s"
+        exit 1

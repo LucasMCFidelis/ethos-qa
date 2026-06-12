@@ -1,0 +1,49 @@
+name: Run Cypress
+description: "Execução dos testes Cypress"
+
+inputs:
+  base_url:
+    required: true
+  api_url:
+    required: true
+  smoke-command:
+    required: true
+  regression-command:
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Setup environment
+      shell: bash
+      run: |
+        echo "BASE_URL=${{ inputs.base_url }}" >> $GITHUB_ENV
+        echo "API_URL=${{ inputs.api_url }}" >> $GITHUB_ENV
+
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Run smoke
+      shell: bash
+      run: ${{ inputs.smoke-command }}
+
+    - name: Run regression
+      shell: bash
+      run: ${{ inputs.regression-command }}
+
+    - name: Upload artifacts
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cypress-artifacts
+        path: |
+          cypress/screenshots
+          cypress/videos
+        retention-days: 7
