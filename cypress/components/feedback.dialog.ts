@@ -1,5 +1,11 @@
 import { feedbackSelectors } from "../support/constants/selectors/feedback.selectors";
 
+interface FeedbackData {
+  rate: 1 | 2 | 3 | 4 | 5;
+  useObjective: number;
+  suggestion?: string;
+}
+
 export class FeedbackDialog {
   shouldBeVisible() {
     cy.get(feedbackSelectors.dialogContainer).should("be.visible");
@@ -29,10 +35,7 @@ export class FeedbackDialog {
   }
 
   selectUseObjectiveByIndex(index: number) {
-    cy.get(feedbackSelectors.useObjective)
-      .find("button")
-      .eq(index)
-      .click();
+    cy.get(feedbackSelectors.useObjective).find("button").eq(index).click();
   }
 
   fillSuggestion(text: string) {
@@ -40,8 +43,13 @@ export class FeedbackDialog {
   }
 
   clickSubmit() {
-    this.submitButton()
-      .should("not.be.disabled")
-      .click();
+    this.submitButton().should("not.be.disabled").click();
+  }
+
+  submitFeedback(feedbackData: FeedbackData) {
+    this.selectRate(feedbackData.rate);
+    this.selectUseObjectiveByIndex(feedbackData.useObjective);
+    this.fillSuggestion(feedbackData.suggestion || "");
+    this.clickSubmit();
   }
 }
