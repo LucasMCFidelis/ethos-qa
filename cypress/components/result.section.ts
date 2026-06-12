@@ -5,10 +5,12 @@ export class ResultSection {
     cy.get(resultSelectors.container).should("be.visible");
   }
 
+  resultLabel() {
+    return cy.get(resultSelectors.label);
+  }
+
   shouldShowLabel() {
-    cy.get(resultSelectors.label)
-      .should("be.visible")
-      .and("not.be.empty");
+    this.resultLabel().should("be.visible").and("not.be.empty");
   }
 
   shouldShowDescription() {
