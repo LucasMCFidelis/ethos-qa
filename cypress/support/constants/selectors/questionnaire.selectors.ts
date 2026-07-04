@@ -5,5 +5,6 @@ export const questionnaireSelectors = {
   answerOptions: '[data-test="questionnaire-answer-option"]',
   nextButton: '[data-test="questionnaire-button-next"]',
   closeButton: '[data-test="questionnaire-button-close"]',
-  answerOptionByIndex: (index: number) => `[data-test="questionnaire-answer-option"][data-test-index="${index}"]`
+  answerOptionByIndex: (index: number) =>
+    `[data-test="questionnaire-answer-option"][data-test-index="${index}"]`,
 };

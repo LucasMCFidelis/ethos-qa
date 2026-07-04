@@ -1,5 +1,5 @@
 import { defineConfig } from "cypress";
-import {plugin as cypressGrepPlugin} from "@cypress/grep/plugin";
+import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import dotenv from "dotenv";
 
 dotenv.config();

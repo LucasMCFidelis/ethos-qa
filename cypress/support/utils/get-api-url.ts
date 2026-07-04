@@ -4,6 +4,6 @@ export function getApiUrl(): string {
   if (!apiUrl) {
     throw new Error("API URL is not defined in Cypress configuration.");
   }
-  
+
   return apiUrl;
 }

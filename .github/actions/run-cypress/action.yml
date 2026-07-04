@@ -19,38 +19,38 @@ runs:
   using: composite
 
   steps:
-  - name: Setup environment
-    shell: bash
-    run: |
-      echo "BASE_URL=${{ inputs.base_url }}" >> $GITHUB_ENV
-      echo "API_URL=${{ inputs.api_url }}" >> $GITHUB_ENV
+    - name: Setup environment
+      shell: bash
+      run: |
+        echo "BASE_URL=${{ inputs.base_url }}" >> $GITHUB_ENV
+        echo "API_URL=${{ inputs.api_url }}" >> $GITHUB_ENV
 
-  - name: Setup Node
-    uses: actions/setup-node@v4
-    with:
-      node-version: 24
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 24
 
-  - name: Install dependencies
-    shell: bash
-    working-directory: ${{ inputs.qa_path }}
-    run: npm ci
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.qa_path }}
+      run: npm ci
 
-  - name: Run smoke
-    shell: bash
-    working-directory: ${{ inputs.qa_path }}
-    run: ${{ inputs.smoke_command }}
+    - name: Run smoke
+      shell: bash
+      working-directory: ${{ inputs.qa_path }}
+      run: ${{ inputs.smoke_command }}
 
-  - name: Run regression
-    shell: bash
-    working-directory: ${{ inputs.qa_path }}
-    run: ${{ inputs.regression_command }}
+    - name: Run regression
+      shell: bash
+      working-directory: ${{ inputs.qa_path }}
+      run: ${{ inputs.regression_command }}
 
-  - name: Upload artifacts
-    if: failure()
-    uses: actions/upload-artifact@v4
-    with:
-      name: cypress-artifacts
-      path: |
-        ${{ inputs.qa_path }}/cypress/screenshots
-        ${{ inputs.qa_path }}/cypress/videos
-      retention-days: 7
+    - name: Upload artifacts
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cypress-artifacts
+        path: |
+          ${{ inputs.qa_path }}/cypress/screenshots
+          ${{ inputs.qa_path }}/cypress/videos
+        retention-days: 7

@@ -1,8 +1,6 @@
 import { TAGS } from "../../support/constants/tags";
 import { validateSchema } from "../../support/utils/validate-schema";
-import type {
-  SessionResultResponse,
-} from "../../support/types/api";
+import type { SessionResultResponse } from "../../support/types/api";
 import { TracksClient } from "../../support/api-clients/TracksClient";
 import { SessionsClient } from "../../support/api-clients/SessionsClient";
 import { sessionResultSchema } from "../../support/schemas/sessions/session-result.schema";
