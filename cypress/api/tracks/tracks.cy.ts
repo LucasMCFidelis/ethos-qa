@@ -54,4 +54,22 @@ describe("Tracks API", { tags: [TAGS.TRACKS] }, () => {
       });
     },
   );
+
+  it(
+    "ETHOS-62 Valida texto da q2 na trilha de confidencialidade",
+    { tags: [TAGS.REGRESSION] },
+    () => {
+      const questionId = "q2";
+      tracksClient
+        .getQuestion("confidencialidade", questionId)
+        .then((response) => {
+          const responseData = response.body.data;
+          expect(response.status).to.eq(200);
+          expect(responseData.id).to.eq(questionId);
+          expect(responseData.text).to.match(
+            /O usuário tem ciência do que estamos fazendo com os dados/i,
+          );
+        });
+    },
+  );
 });
