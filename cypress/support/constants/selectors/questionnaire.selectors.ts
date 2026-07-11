@@ -7,4 +7,6 @@ export const questionnaireSelectors = {
   closeButton: '[data-test="questionnaire-button-close"]',
   answerOptionByIndex: (index: number) =>
     `[data-test="questionnaire-answer-option"][data-test-index="${index}"]`,
+  answerOptionByValue: (value: string) =>
+    `[data-test="questionnaire-answer-option"][data-test-value="${value}"]`,
 };

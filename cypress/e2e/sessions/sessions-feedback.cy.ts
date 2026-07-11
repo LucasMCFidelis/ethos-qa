@@ -6,7 +6,7 @@ describe("Sessions — Feedback E2E", { tags: [TAGS.SESSIONS_FEEDBACK] }, () => 
   beforeEach(() => {
     homePage.visit();
     homePage.startAndSaveSessionId();
-    homePage.questionnaire.completePath([0, 1]);
+    homePage.questionnaire.completePath(["positive", "negative"]);
     homePage.result.clickOpenFeedback();
   });
 

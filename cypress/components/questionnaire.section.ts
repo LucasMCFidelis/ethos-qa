@@ -1,3 +1,7 @@
+import {
+  ANSWER_OPTIONS,
+  AnswerOptionsType,
+} from "../support/constants/answer-options";
 import { questionnaireSelectors } from "../support/constants/selectors/questionnaire.selectors";
 
 export class QuestionnaireSection {
@@ -44,6 +48,12 @@ export class QuestionnaireSection {
     cy.get(questionnaireSelectors.answerOptionByIndex(index)).click();
   }
 
+  selectAnswerByValue(value: AnswerOptionsType) {
+    cy.get(
+      questionnaireSelectors.answerOptionByValue(ANSWER_OPTIONS[value]),
+    ).click();
+  }
+
   clickNext() {
     this.nextButtonShouldBeEnabled();
     this.nextButton().click();
@@ -58,10 +68,14 @@ export class QuestionnaireSection {
     this.clickNext();
   }
 
-  completePath(answerIndices: number[]) {
-    answerIndices.forEach((index, step) => {
-      this.selectAnswerByIndex(index);
-      if (step < answerIndices.length - 1) {
+  completePath(answerOptions: Array<number | AnswerOptionsType>) {
+    answerOptions.forEach((option, step) => {
+      if (typeof option === "number") {
+        this.selectAnswerByIndex(option);
+      } else {
+        this.selectAnswerByValue(option);
+      }
+      if (step < answerOptions.length - 1) {
         this.clickNext();
       }
     });

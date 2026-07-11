@@ -17,7 +17,7 @@ describe("Sessions — Result E2E", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
     "ETHOS-41 Responder questionário até resultado fora do escopo",
     { tags: [TAGS.REGRESSION] },
     () => {
-      homePage.questionnaire.completePath([1]);
+      homePage.questionnaire.completePath(["negative"]);
       homePage.result.shouldBeVisible();
       homePage.result.resultLabel().contains(RESULT_LABELS.outOfScope);
     },
@@ -27,7 +27,13 @@ describe("Sessions — Result E2E", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
     "ETHOS-42 Responder questionário até resultado positivo",
     { tags: [TAGS.REGRESSION] },
     () => {
-      homePage.questionnaire.completePath([0, 0, 0, 1, 1]);
+      homePage.questionnaire.completePath([
+        "positive",
+        "positive",
+        "positive",
+        "negative",
+        "negative",
+      ]);
       homePage.result.shouldBeVisible();
       homePage.result.resultLabel().contains(RESULT_LABELS.acceptable);
     },
@@ -37,7 +43,13 @@ describe("Sessions — Result E2E", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
     "ETHOS-43 Responder questionário até resultado moderado",
     { tags: [TAGS.REGRESSION] },
     () => {
-      homePage.questionnaire.completePath([0, 0, 0, 1, 0]);
+      homePage.questionnaire.completePath([
+        "positive",
+        "positive",
+        "positive",
+        "negative",
+        "positive",
+      ]);
       homePage.result.shouldBeVisible();
       homePage.result.resultLabel().contains(RESULT_LABELS.moderate);
     },
@@ -47,7 +59,7 @@ describe("Sessions — Result E2E", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
     "ETHOS-44 Responder questionário até resultado de alerta",
     { tags: [TAGS.REGRESSION] },
     () => {
-      homePage.questionnaire.completePath([0, 1]);
+      homePage.questionnaire.completePath(["positive", "doubt"]);
       homePage.result.shouldBeVisible();
       homePage.result.resultLabel().contains(RESULT_LABELS.highRisk);
     },
