@@ -6,6 +6,10 @@ import { SessionsClient } from "../../support/api-clients/SessionsClient";
 import { sessionResultSchema } from "../../support/schemas/sessions/session-result.schema";
 import { TRACKS_TEST_DATA } from "../../support/test-data/tracks";
 import { SESSION_ANSWERS } from "../../support/test-data/sessions";
+import {
+  clearSessionData,
+  saveSessionId,
+} from "../../support/utils/session-hooks-data";
 
 describe("Sessions — Result API", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
   const tracksClient = new TracksClient();
@@ -19,6 +23,7 @@ describe("Sessions — Result API", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
         .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
         .then((startResponse) => {
           const sessionId = startResponse.body.data.sessionId;
+          saveSessionId(sessionId);
 
           return sessionsClient
             .answerQuestion(
@@ -39,6 +44,10 @@ describe("Sessions — Result API", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
               });
             });
         });
+    });
+
+    after(() => {
+      clearSessionData();
     });
 
     it(

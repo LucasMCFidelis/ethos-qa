@@ -14,6 +14,10 @@ import { savedAnswerSchema } from "../../support/schemas/sessions/saved-answer.s
 import { sessionStartSchema } from "../../support/schemas/sessions/session-start.schema";
 import { TRACKS_TEST_DATA } from "../../support/test-data/tracks";
 import { SESSION_ANSWERS } from "../../support/test-data/sessions";
+import {
+  clearSessionData,
+  saveSessionId,
+} from "../../support/utils/session-hooks-data";
 
 describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
   const tracksClient = new TracksClient();
@@ -27,7 +31,12 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
         .then((response) => {
           responseObject = response;
+          saveSessionId(response.body.data.sessionId);
         });
+    });
+
+    after(() => {
+      clearSessionData();
     });
 
     it(
@@ -68,6 +77,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
         .then((startResponse) => {
           const sessionId = startResponse.body.data.sessionId;
+          saveSessionId(sessionId);
 
           return sessionsClient
             .answerQuestion(
@@ -80,6 +90,10 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
                 response as Cypress.Response<AnswerNextQuestionResponse>;
             });
         });
+    });
+
+    after(() => {
+      clearSessionData();
     });
 
     it(
@@ -119,6 +133,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
         .then((startResponse) => {
           const sessionId = startResponse.body.data.sessionId;
+          saveSessionId(sessionId);
 
           return sessionsClient
             .answerQuestion(
@@ -131,6 +146,10 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
                 response as Cypress.Response<AnswerFinishResponse>;
             });
         });
+    });
+
+    after(() => {
+      clearSessionData();
     });
 
     it(
@@ -167,6 +186,7 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
         .startSession(TRACKS_TEST_DATA.CONFIDENTIALITY_TRACK_ID)
         .then((startResponse) => {
           const sessionId = startResponse.body.data.sessionId;
+          saveSessionId(sessionId);
 
           return sessionsClient
             .answerQuestion(
@@ -182,6 +202,10 @@ describe("Sessions — Answers API", { tags: [TAGS.SESSIONS_ANSWERS] }, () => {
                 }),
             );
         });
+    });
+
+    after(() => {
+      clearSessionData();
     });
 
     it(
