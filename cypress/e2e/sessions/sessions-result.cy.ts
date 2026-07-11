@@ -1,11 +1,18 @@
 import { homePage } from "../../pages/home.page";
 import { RESULT_LABELS } from "../../support/constants/result-labels";
 import { TAGS } from "../../support/constants/tags";
+import {
+  clearSessionData
+} from "../../support/utils/session-hooks-data";
 
 describe("Sessions — Result E2E", { tags: [TAGS.SESSIONS_RESULTS] }, () => {
   beforeEach(() => {
     homePage.visit();
-    homePage.clickStartSimulation();
+    homePage.startAndSaveSessionId();
+  });
+
+  afterEach(() => {
+    clearSessionData();
   });
 
   it(
